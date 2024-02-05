@@ -8,6 +8,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        lightBeige: "#FEFAF0",
+        satYellow: "#F7CE8B",
+        accBlack: "#050503",
+        satRed: {
+          DEFAULT: "#B3414C",
+          hover: "#aa555e",
+        },
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
