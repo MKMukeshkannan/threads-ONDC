@@ -1,12 +1,21 @@
 import Image from "next/image";
 import { IconChevronsRight, IconStarFilled } from "@tabler/icons-react";
 import { TProduct } from "@/utils/types";
+import { useTryOutContext } from "@/context/TryOutContext";
 
 interface prop {
   product: TProduct;
 }
 
 export default function ProductCard({ product }: prop) {
+  const { outfit, setOutfit } = useTryOutContext();
+
+  const handleAddToTryOut = () => {
+    const newOutfit = outfit;
+    newOutfit[product.category] = product;
+    setOutfit(newOutfit);
+  };
+
   return (
     <section className="shadow-[5px_5px_0px_0px_rgba(0,0,0)] max-w-64 min-w-64 bg-satYellow rounded-xl border-accBlack border-4 relative flex flex-col items-right justify-between h-80 p-3">
       <Image
@@ -26,7 +35,10 @@ export default function ProductCard({ product }: prop) {
             <span className="text-xs font-mono block">{product.brand}</span>
             $ {product.price}
           </h2>
-          <button className="w-14 h-10 inline-flex justify-center border border-accBlack rounded-md items-center bg-satRed text-lightBeige hover:bg-satRed-hover hover:text-white">
+          <button
+            onClick={handleAddToTryOut}
+            className="w-14 h-10 inline-flex justify-center border border-accBlack rounded-md items-center bg-satRed text-lightBeige hover:bg-satRed-hover hover:text-white"
+          >
             <IconChevronsRight />
           </button>
         </div>
