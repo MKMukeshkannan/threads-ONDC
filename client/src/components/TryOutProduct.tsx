@@ -1,4 +1,4 @@
-import { useTryOutContext } from "@/context/TryOutContext";
+import { useTryOut } from "@/store";
 import { TProduct } from "@/utils/types";
 import { IconTrash } from "@tabler/icons-react";
 
@@ -7,12 +7,11 @@ interface prop {
 }
 
 export default function TryOutProduct({ product }: prop) {
-  const { outfit, setOutfit } = useTryOutContext();
+  const { removeOutfit } = useTryOut((state) => state);
+
   const handleRemove = () => {
     if (!product) return;
-    const newOutfit = outfit;
-    newOutfit[product?.category] = null;
-    setOutfit(newOutfit);
+    removeOutfit(product);
   };
 
   return (

@@ -1,19 +1,17 @@
 import Image from "next/image";
 import { IconChevronsRight, IconStarFilled } from "@tabler/icons-react";
 import { TProduct } from "@/utils/types";
-import { useTryOutContext } from "@/context/TryOutContext";
+import { useTryOut } from "@/store";
 
 interface prop {
   product: TProduct;
 }
 
 export default function ProductCard({ product }: prop) {
-  const { outfit, setOutfit } = useTryOutContext();
+  const addOutfit = useTryOut((state) => state.addOutfit);
 
   const handleAddToTryOut = () => {
-    const newOutfit = outfit;
-    newOutfit[product.category] = product;
-    setOutfit(newOutfit);
+    addOutfit(product);
   };
 
   return (

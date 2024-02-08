@@ -39,7 +39,7 @@ export default function ProductPage({ products }: prop) {
         ))}
       </Swiper>
 
-      <section className="hidden md:flex space-x-5 min-w-full m-5">
+      <section className="hidden md:flex space-x-5 m-5">
         {products.map((product, index) => (
           <ProductCard key={index} product={product} />
         ))}

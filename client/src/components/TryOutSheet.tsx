@@ -2,12 +2,12 @@
 
 import { IconShirt } from "@tabler/icons-react";
 import { useState } from "react";
-import { useTryOutContext } from "@/context/TryOutContext";
 import TryOutProduct from "./TryOutProduct";
+import { useTryOut } from "@/store";
 
 export default function TryOutSheet() {
-  const [isOpen, setOpen] = useState<boolean>(true);
-  const { outfit, setOutfit } = useTryOutContext();
+  const [isOpen, setOpen] = useState<boolean>(false);
+  const { outfit } = useTryOut((state) => state);
 
   return (
     <>
