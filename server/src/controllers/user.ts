@@ -24,8 +24,8 @@ export const suggestion = async (req: Request, res: Response) => {
 
     const prompt = new PromptTemplate({
       inputVariables: ["history", "input"],
-      template: `summarize what the user is trying to buy in a single statement. get human conversation from Previous conversation section.don't say anything extra.
-         
+      template: `summarize what the user is trying to buy in a single statement. get context from Previous conversation section.don't say anything extra. If the current query of the user is not related to the previous conversation don't get details from Previous conversation.
+          Previous Conversation:
           {history}
 
           Input :
@@ -43,19 +43,19 @@ export const suggestion = async (req: Request, res: Response) => {
     const data = await chain.invoke({ input: resData });
     console.log(memory.chatHistory);
 
-    const index = pc.Index(process.env.PINECONE_INDEX!);
+    // const index = pc.Index(process.env.PINECONE_INDEX!);
 
-    const vector = await embedding.embedDocuments([transcript]);
+    // const vector = await embedding.embedDocuments([transcript]);
 
-    const products = await index.query({
-      topK: 3,
-      vector: vector[0],
-      includeMetadata: true,
-    });
+    // const products = await index.query({
+    //   topK: 3,
+    //   vector: vector[0],
+    //   includeMetadata: true,
+    // });
 
     res.status(200).json({
       status: "success",
-      data: products,
+      data: data,
     });
   } catch (error) {
     res.status(400).json({
