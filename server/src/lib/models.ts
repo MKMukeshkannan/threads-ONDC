@@ -1,5 +1,5 @@
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { BufferMemory } from "langchain/memory";
+import { BufferWindowMemory } from "langchain/memory";
 import { Ollama } from "@langchain/community/llms/ollama";
 
 export const ollama = new Ollama({
@@ -14,4 +14,4 @@ export const embedding = new OpenAIEmbeddings({
   dimensions: 1536,
 });
 
-export const memory = new BufferMemory();
+export const memory = new BufferWindowMemory({ k: 1 });
