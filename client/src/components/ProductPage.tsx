@@ -15,35 +15,12 @@ interface prop {
 
 export default function ProductPage({ products }: prop) {
   return (
-    <>
-      <Swiper
-        effect={"coverflow"}
-        slidesPerView="auto"
-        centeredSlides={true}
-        coverflowEffect={{
-          rotate: 50,
-          stretch: 0,
-          depth: 100,
-          modifier: 1,
-        }}
-        modules={[EffectCoverflow]}
-        className="md:hidden"
-      >
-        {products.map((product, index) => (
-          <SwiperSlide
-            className="m-5 max-w-64"
-            key={index}
-          >
-            <ProductCard product={product} />
-          </SwiperSlide>
-        ))}
-      </Swiper>
-
-      <section className="hidden md:flex space-x-5 m-5">
+    <div className="w-full flex justify-center">
+      <section className="flex space-x-5 m-5 gap-5">
         {products.map((product, index) => (
           <ProductCard key={index} product={product} />
         ))}
       </section>
-    </>
+    </div>
   );
 }

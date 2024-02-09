@@ -2,9 +2,15 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { BufferWindowMemory } from "langchain/memory";
 import { Ollama } from "@langchain/community/llms/ollama";
 
-export const ollama = new Ollama({
-  baseUrl: "http://localhost:11434",
+export const llama2 = new Ollama({
+  baseUrl: process.env.OLLAMA as string,
   model: "llama2",
+  temperature: 0,
+});
+
+export const llava = new Ollama({
+  model: "llava",
+  baseUrl: process.env.OLLAMA as string,
   temperature: 0,
 });
 

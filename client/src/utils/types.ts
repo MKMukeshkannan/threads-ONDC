@@ -8,3 +8,9 @@ export interface TProduct {
   texture: string;
   category: "top" | "bottom" | "foot";
 }
+
+export interface AIresType {
+  id: string;
+  value: Array<number>;
+  metadata: TProduct;
+}
