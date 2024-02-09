@@ -1,17 +1,17 @@
 import { OpenAIClient, toFile } from "@langchain/openai";
 import { Request, Response } from "express";
-import fs from "fs";
 import { pc } from "../lib/pinecone.js";
-import { memory, embedding, ollama } from "../lib/models.js";
+import { memory, embedding, llama2 } from "../lib/models.js";
 import { PromptTemplate } from "@langchain/core/prompts";
-import { LLMChain } from "langchain/chains";
 import { ConversationChain } from "langchain/chains";
 
 export const suggestion = async (req: Request, res: Response) => {
-  const filePath = "shirt.mp3";
+  const filePath = "ecommerce.mp3";
   try {
     const client = new OpenAIClient();
-    const buffer = fs.readFileSync(filePath);
+    if (!req.file) throw new Error("no audio file");
+
+    const buffer = req.file.buffer;
     const response = await client.audio.transcriptions.create({
       model: "whisper-1",
       language: "en",
@@ -24,7 +24,7 @@ export const suggestion = async (req: Request, res: Response) => {
 
     const prompt = new PromptTemplate({
       inputVariables: ["history", "input"],
-      template: `summarize what the user is trying to buy in a single statement. get context from Previous conversation section.don't say anything extra. If the current query of the user is not related to the previous conversation don't get details from Previous conversation.
+      template: `summarize what the user is trying to buy and related to it in a single statement. get context from Previous conversation section.don't say anything extra. If the current query of the user is not related to the previous conversation don't get details from Previous conversation.
           Previous Conversation:
           {history}
 
@@ -32,30 +32,34 @@ export const suggestion = async (req: Request, res: Response) => {
           {input}
         `,
     });
+
+    console.log("transcript : ", transcript);
+
     const chain = new ConversationChain({
-      llm: ollama,
+      llm: llama2,
       memory: memory,
       prompt: prompt,
     });
 
-    const resData: string = await req.body.input;
+    const data = await chain.invoke({ input: transcript });
 
-    const data = await chain.invoke({ input: resData });
-    console.log(memory.chatHistory);
+    const index = pc.Index(process.env.PINECONE_INDEX || "test");
 
-    // const index = pc.Index(process.env.PINECONE_INDEX!);
+    const vector = await embedding.embedDocuments([data.response]);
 
-    // const vector = await embedding.embedDocuments([transcript]);
+    const productsRespose = await index.query({
+      topK: 4,
+      vector: vector[0],
+      includeMetadata: true,
+    });
 
-    // const products = await index.query({
-    //   topK: 3,
-    //   vector: vector[0],
-    //   includeMetadata: true,
-    // });
+    const products = productsRespose.matches.map((product) => {
+      return product.metadata;
+    });
 
     res.status(200).json({
       status: "success",
-      data: data,
+      data: products,
     });
   } catch (error) {
     res.status(400).json({

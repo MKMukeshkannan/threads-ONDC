@@ -30,8 +30,8 @@ export default function ProductCard({ product }: prop) {
 
         <div className="flex justify-between">
           <h2 className="text-2xl font-black font-mono">
-            <span className="text-xs font-mono block">{product.brand}</span>
-            $ {product.price}
+            <span className="text-xs font-mono block">{product.brand}</span>${" "}
+            {product.price}
           </h2>
           <button
             onClick={handleAddToTryOut}
