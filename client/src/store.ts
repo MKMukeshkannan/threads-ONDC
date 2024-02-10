@@ -7,8 +7,17 @@ export interface Outfit {
   foot: TProduct | null;
 }
 
+export interface TTryOn {
+  name: string;
+  brand: string;
+  texture: string;
+  skin: string;
+}
+
 interface TryOutState {
   outfit: Outfit;
+  tryOn: TTryOn;
+  setTryOn: (product: TProduct) => void;
   addOutfit: (product: TProduct) => void;
   removeOutfit: (product: TProduct) => void;
 }
@@ -19,6 +28,26 @@ export const useTryOut = create<TryOutState>((set) => ({
     bottom: null,
     foot: null,
   },
+
+  tryOn: {
+    name: "",
+    brand: "",
+    texture: "",
+    skin: "",
+  },
+
+  setTryOn: ((product) => {
+    set((state) => {
+      return ({
+        tryOn: {
+          name: product.name,
+          texture: product.texture,
+          skin: "",
+          brand: product.brand,
+        },
+      });
+    });
+  }),
 
   addOutfit: (product) => {
     set((state) => {

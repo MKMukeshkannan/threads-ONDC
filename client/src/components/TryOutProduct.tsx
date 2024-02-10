@@ -1,21 +1,28 @@
 import { useTryOut } from "@/store";
 import { TProduct } from "@/utils/types";
 import { IconTrash } from "@tabler/icons-react";
+import { redirect } from 'next/navigation'
 
 interface prop {
   product: TProduct | null;
 }
 
 export default function TryOutProduct({ product }: prop) {
-  const { removeOutfit } = useTryOut((state) => state);
+  const { removeOutfit, setTryOn } = useTryOut((state) => state);
 
   const handleRemove = () => {
     if (!product) return;
     removeOutfit(product);
   };
 
+  const handleTryOut = () => {
+    if (!product) return;
+    setTryOn(product);
+    redirect('/model')
+  };
+
   return (
-    <section className="relative shadow-[5px_5px_0px_0px_rgba(0,0,0)] bg-[#9CCAB8] w-48 h-56 border-2 border-black p-3 rounded-md">
+    <section className="relative shadow-[5px_5px_0px_0px_rgba(0,0,0)] bg-[#9CCAB8] w-48 h-64 border-2 border-black p-3 rounded-md">
       <img
         className="w-48 h-40 border-2 border-black rounded-sm object-cover"
         src={product
@@ -31,6 +38,16 @@ export default function TryOutProduct({ product }: prop) {
       >
         <IconTrash />
       </div>
+
+      {product &&
+        (
+          <button
+            onClick={handleTryOut}
+            className="text-center border-black border-2 rounded-md p-1 bg-satRed text-lightBeige font-mono font-black hover:bg-satRed-hover"
+          >
+            Tru Out
+          </button>
+        )}
     </section>
   );
 }

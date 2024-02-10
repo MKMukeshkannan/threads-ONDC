@@ -2,28 +2,51 @@
 
 import { Canvas } from "@react-three/fiber";
 import {
+  AccumulativeShadows,
+  Center,
+  Environment,
   OrbitControls,
-  PerspectiveCamera,
-  Stage,
-  useGLTF,
+  RandomizedLight,
 } from "@react-three/drei";
 
-function Model(props: any) {
-  const { scene } = useGLTF("/man-standing.glb");
-  return <primitive object={scene} {...props} />;
-}
+import { Model } from "../../public/Scene.jsx";
+import { useTryOut } from "../store";
+import { redirect } from "next/navigation.js";
 
 export function TryOn3D() {
+  const { tryOn } = useTryOut((state) => state);
+  if (tryOn.brand === "") return redirect("/");
+
   return (
-    <Canvas
-      style={{ "position": "absolute" }}
-      shadows
-    >
-      <PerspectiveCamera makeDefault fov={50} position={[3, 2, 5]} />
-      <OrbitControls target={[0, 0.35, 0]} maxPolarAngle={1.45} />
-      <Stage environment={"sunset"}>
-        <Model />
-      </Stage>
-    </Canvas>
+    <>
+      <section className="text-right absolute p-3 top-0 right-0 z-[999]">
+        <h1 className="font-mono ">
+          You are currently Trying out
+        </h1>
+        <h1 className="text-3xl font-mono font-bold">{tryOn.name}</h1>
+        <h1 className="text-sm font-mono font-thin">{tryOn.brand}</h1>
+      </section>
+      <Canvas
+        gl={{ antialias: false, preserveDrawingBuffer: true }}
+        shadows
+        style={{ position: "absolute" }}
+        camera={{ position: [3, 2, 5], fov: 50 }}
+      >
+        <group position={[0, -0.75, 0]}>
+          <Center top>
+            <Model />
+          </Center>
+          <AccumulativeShadows>
+            <RandomizedLight position={[2, 5, 5]} />
+          </AccumulativeShadows>
+        </group>
+        <OrbitControls
+          makeDefault
+          minPolarAngle={0}
+          maxPolarAngle={Math.PI / 2}
+        />
+        <Environment preset="dawn" background blur={1} />
+      </Canvas>
+    </>
   );
 }
