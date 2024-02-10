@@ -11,11 +11,13 @@ import {
 
 import { Model } from "../../public/Scene.jsx";
 import { useTryOut } from "../store";
-import { redirect } from "next/navigation.js";
+import { useRouter } from "next/navigation";
 
 export function TryOn3D() {
+  const route = useRouter();
   const { tryOn } = useTryOut((state) => state);
-  if (tryOn.brand === "") return redirect("/");
+
+  if (tryOn.name === "") route.push("/");
 
   return (
     <>

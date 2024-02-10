@@ -1,7 +1,9 @@
+"use client";
+
 import { useTryOut } from "@/store";
 import { TProduct } from "@/utils/types";
 import { IconTrash } from "@tabler/icons-react";
-import { redirect } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
 interface prop {
   product: TProduct | null;
@@ -9,6 +11,7 @@ interface prop {
 
 export default function TryOutProduct({ product }: prop) {
   const { removeOutfit, setTryOn } = useTryOut((state) => state);
+  const route = useRouter();
 
   const handleRemove = () => {
     if (!product) return;
@@ -18,7 +21,7 @@ export default function TryOutProduct({ product }: prop) {
   const handleTryOut = () => {
     if (!product) return;
     setTryOn(product);
-    redirect('/model')
+    route.push("/model");
   };
 
   return (

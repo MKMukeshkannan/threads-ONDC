@@ -8,12 +8,6 @@ export const llama2 = new Ollama({
   temperature: 0,
 });
 
-export const llava = new Ollama({
-  model: "llava",
-  baseUrl: process.env.OLLAMA as string,
-  temperature: 0,
-});
-
 export const embedding = new OpenAIEmbeddings({
   openAIApiKey: process.env.OPENAI_API_KEY,
   modelName: "text-embedding-3-large",

@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../utils/Supabaseclient.js";
 import { pc } from "../lib/pinecone.js";
-import { embedding, llava } from "../lib/models.js";
+import { embedding } from "../lib/models.js";
 import { PineconeRecord, RecordMetadata } from "@pinecone-database/pinecone";
+import { Ollama } from "@langchain/community/llms/ollama";
 
 const index = pc.Index(process.env.PINECONE_INDEX || "test");
 
@@ -40,11 +41,15 @@ const StoreToDB = async (ProductData: Tproduct) => {
 const GenerateDescription = async (imageData: Buffer | undefined) => {
   let description = "";
   if (imageData) {
-    llava.bind({
+    const model = new Ollama({
+      model: "llava",
+      baseUrl: process.env.OLLAMA as string,
+      temperature: 0,
+    }).bind({
       images: [imageData.toString("base64")],
     });
-    description = await llava.invoke(
-      "describe in 200 words on only about the clothes in this image with its color, texture , cloth material and so on and dont explain anything about the humans and background in this image "
+    description = await model.invoke(
+      "describe in 200 words on only about the clothes in this image with its color, texture , cloth material and so on and dont explain anything about the humans and background in this image ",
     );
   }
 
@@ -115,8 +120,12 @@ export const uploadProduct = async (req: Request, res: Response) => {
       return res.status(400).send("Error Occured");
     }
 
-    let img_url = `${process.env.SUPABASE_URL}/storage/v1/object/public/store/${response[0]?.path}`;
-    let texture = `${process.env.SUPABASE_URL}/storage/v1/object/public/store/${response[1]?.path}`;
+    let img_url = `${process.env.SUPABASE_URL}/storage/v1/object/public/store/${
+      response[0]?.path
+    }`;
+    let texture = `${process.env.SUPABASE_URL}/storage/v1/object/public/store/${
+      response[1]?.path
+    }`;
 
     let data = {
       id,

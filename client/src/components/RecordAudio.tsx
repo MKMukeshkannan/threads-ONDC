@@ -60,7 +60,6 @@ export default function RecordAudio() {
   const stopRecording = () => {
     if (!mediaRecorder.current) return;
 
-    setShopStatus("inactive");
     mediaRecorder.current.stop();
     mediaRecorder.current.onstop = async () => {
       const audioBlob = new Blob(audioChunks, { type: mimeType });
@@ -69,7 +68,7 @@ export default function RecordAudio() {
       formData.append("audio", audioBlob, "audio.wav");
       try {
         setShopStatus("fetching");
-        const res = await fetch(`${websiteHost}/api/user/voice`, {
+        const res = await fetch(`${websiteHost}api/user/voice`, {
           method: "POST",
           body: formData,
         });
@@ -81,6 +80,7 @@ export default function RecordAudio() {
         } else {
           replaceProducts([]);
         }
+        setShopStatus("inactive");
       } catch {
         setShopStatus("error");
         setTimeout(() => {
@@ -172,29 +172,27 @@ export default function RecordAudio() {
 
       {shopStatus === "fetching" && (
         <>
-          <>
-            <Lottie
-              loop={false}
-              lottieRef={listeningBot}
-              onComplete={() => {
-                listeningBot.current?.playSegments([321, 450]);
-              }}
-              initialSegment={[90,230]}
-              animationData={ChatBot}
-              className="w-80 h-80"
-            />
-            <button
-              className="absolute bottom-10 mx-auto left-0 right-0 text-center border-black border-2 rounded-md p-2 bg-satRed text-lightBeige font-mono font-black hover:bg-satRed-hover"
-              disabled
-              onClick={stopRecording}
-              type="button"
-            >
-              Stop Recording
-            </button>
-            <h1 className=" absolute bottom-0 mx-auto left-0 right-0 text-center  font-mono text-xs font-bold">
-              Kindly be patient, till i fetch your request..
-            </h1>
-          </>
+          <Lottie
+            loop={true}
+            lottieRef={listeningBot}
+            onComplete={() => {
+              listeningBot.current?.playSegments([90, 230]);
+            }}
+            initialSegment={[90, 230]}
+            animationData={ChatBot}
+            className="w-80 h-80"
+          />
+          <button
+            className="absolute bottom-10 mx-auto left-0 right-0 text-center border-black border-2 rounded-md p-2 bg-satRed text-lightBeige font-mono font-black hover:bg-satRed-hover"
+            disabled
+            onClick={stopRecording}
+            type="button"
+          >
+            Loading
+          </button>
+          <h1 className=" absolute bottom-0 mx-auto left-0 right-0 text-center  font-mono text-xs font-bold">
+            Kindly be patient, till i fetch your request..
+          </h1>
         </>
       )}
 
