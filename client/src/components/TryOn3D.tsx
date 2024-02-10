@@ -11,13 +11,9 @@ import {
 
 import { Model } from "../../public/Scene.jsx";
 import { useTryOut } from "../store";
-import { useRouter } from "next/navigation";
 
 export function TryOn3D() {
-  const route = useRouter();
   const { tryOn } = useTryOut((state) => state);
-
-  if (tryOn.name === "") route.push("/");
 
   return (
     <>
