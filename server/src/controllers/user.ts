@@ -1,9 +1,9 @@
 import { OpenAIClient, toFile } from "@langchain/openai";
 import { Request, Response } from "express";
 import { pc } from "../lib/pinecone.js";
-import { memory, embedding, llama2 } from "../lib/models.js";
+import { embedding, llama2 } from "../lib/models.js";
 import { PromptTemplate } from "@langchain/core/prompts";
-import { ConversationChain } from "langchain/chains";
+import { LLMChain } from "langchain/chains";
 
 export const suggestion = async (req: Request, res: Response) => {
   const filePath = "ecommerce.mp3";
@@ -12,6 +12,8 @@ export const suggestion = async (req: Request, res: Response) => {
     if (!req.file) throw new Error("no audio file");
 
     const buffer = req.file.buffer;
+    const command = req.body.command;
+    console.log(command);
     const response = await client.audio.transcriptions.create({
       model: "whisper-1",
       language: "en",
@@ -35,17 +37,16 @@ export const suggestion = async (req: Request, res: Response) => {
 
     console.log("transcript : ", transcript);
 
-    const chain = new ConversationChain({
+    const chain = new LLMChain({
       llm: llama2,
-      memory: memory,
       prompt: prompt,
     });
 
-    const data = await chain.invoke({ input: transcript });
+    const data = await chain.call({ input: transcript , history : command });
 
     const index = pc.Index(process.env.PINECONE_INDEX || "test");
 
-    const vector = await embedding.embedDocuments([data.response]);
+    const vector = await embedding.embedDocuments([data.text]);
 
     const productsRespose = await index.query({
       topK: 4,
@@ -60,6 +61,7 @@ export const suggestion = async (req: Request, res: Response) => {
     res.status(200).json({
       status: "success",
       data: products,
+      command : data.text,
     });
   } catch (error) {
     res.status(400).json({
