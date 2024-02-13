@@ -66,6 +66,12 @@ export default function RecordAudio() {
       const audioUrl = URL.createObjectURL(audioBlob);
       const formData = new FormData();
       formData.append("audio", audioBlob, "audio.wav");
+      let command : string = "";
+      if(sessionStorage.getItem("command")){
+        command = sessionStorage.getItem("command") as string;
+      }
+      formData.append("command",command);
+
       try {
         setShopStatus("fetching");
         const res = await fetch(`${websiteHost}api/user/voice`, {
@@ -73,6 +79,7 @@ export default function RecordAudio() {
           body: formData,
         });
         const result = await res.json();
+        sessionStorage.setItem("command",result.command);
         setAudio(audioUrl);
         setAudioChunks([]);
         if (result.status == "success") {
