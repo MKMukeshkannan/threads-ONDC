@@ -6,6 +6,8 @@ import { embedding } from "../lib/models.js";
 import { PineconeRecord, RecordMetadata } from "@pinecone-database/pinecone";
 import { Ollama } from "@langchain/community/llms/ollama";
 
+const bucketName = process.env.SUPABASE_BUCKET_NAME as string;
+
 const index = pc.Index(process.env.PINECONE_INDEX || "test");
 
 interface Tproduct {
@@ -49,10 +51,9 @@ const GenerateDescription = async (imageData: Buffer | undefined) => {
       images: [imageData.toString("base64")],
     });
     description = await model.invoke(
-      "describe in 200 words on only about the clothes in this image with its color, texture , cloth material and so on and dont explain anything about the humans and background in this image ",
+      "describe in 200 words on only about the clothes in this image with its color, texture , cloth material and so on and dont explain anything about the humans and background in this image "
     );
   }
-
   return description;
 };
 
@@ -86,7 +87,7 @@ export const uploadProduct = async (req: Request, res: Response) => {
       return res.status(400).send("Image File Doesn't Present");
     }
 
-    let description = "null";
+    let description = "";
 
     if (avatarFile) {
       description = await GenerateDescription(avatarFile);
@@ -104,9 +105,8 @@ export const uploadProduct = async (req: Request, res: Response) => {
       for (let i = 0; i < keys.length; i++) {
         const filename = keys[i];
         const file = FileName[filename];
-
         const { data, error } = await supabase.storage
-          .from("store")
+          .from(bucketName)
           .upload(filename, file, {
             cacheControl: "3600",
             upsert: false,
@@ -120,12 +120,8 @@ export const uploadProduct = async (req: Request, res: Response) => {
       return res.status(400).send("Error Occured");
     }
 
-    let img_url = `${process.env.SUPABASE_URL}/storage/v1/object/public/store/${
-      response[0]?.path
-    }`;
-    let texture = `${process.env.SUPABASE_URL}/storage/v1/object/public/store/${
-      response[1]?.path
-    }`;
+    let img_url = `${process.env.SUPABASE_URL}/storage/v1/object/public/${bucketName}/${response[0]?.path}`;
+    let texture = `${process.env.SUPABASE_URL}/storage/v1/object/public/${bucketName}/${response[1]?.path}`;
 
     let data = {
       id,
@@ -143,6 +139,6 @@ export const uploadProduct = async (req: Request, res: Response) => {
 
     res.json({ "Product Data Upload": "Done", data });
   } catch (err) {
-    res.status(400).send("Error Occured");
+    res.status(400).send(`Error Occured ${err}`);
   }
 };

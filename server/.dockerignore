@@ -1,0 +1,17 @@
+node_modules/
+
+build/
+dist/
+*.log
+*.lock
+
+.idea
+.vscode
+.DS_Store
+
+.env
+.env.example
+
+shirt.mp3
+
+
