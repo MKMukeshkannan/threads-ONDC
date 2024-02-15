@@ -45,7 +45,7 @@ const GenerateDescription = async (imageData: Buffer | undefined) => {
   if (imageData) {
     const model = new Ollama({
       model: "llava",
-      baseUrl: process.env.OLLAMA as string,
+      baseUrl: process.env.LLAVA_OLLAMA as string,
       temperature: 0,
     }).bind({
       images: [imageData.toString("base64")],
