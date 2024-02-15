@@ -2,7 +2,7 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { Ollama } from "@langchain/community/llms/ollama";
 
 export const llama2 = new Ollama({
-  baseUrl: process.env.OLLAMA as string,
+  baseUrl: process.env.LLAMA_OLLAMA as string,
   model: "llama2",
   temperature: 0,
 });
